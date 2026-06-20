@@ -77,72 +77,94 @@ function roundRect(x,y,w,h,r){
 
 function draw(){
   ctx.clearRect(0,0,W,H);
-  // fondo blanco
-  ctx.fillStyle='#fff';ctx.fillRect(0,0,W,H);
+  const light='#F4F7FB';     // gris azulado claro (reemplaza el blanco)
+  const skew=38;             // inclinación de las divisiones diagonales
+  // centros de las divisiones
+  const topY=620;            // división superior (blanco/azul)
+  const midY=1690;           // división inferior (azul/blanco)
 
-  // ===== banda superior BLANCA =====
-  ctx.fillStyle='#fff';
-  ctx.fillRect(0,0,W,600);
-  // barra dorada (recta)
-  ctx.fillStyle=C.gold;
-  ctx.fillRect(0,600,W,14);
-  // sombra suave bajo la banda
-  let shb=ctx.createLinearGradient(0,614,0,664);
-  shb.addColorStop(0,'rgba(0,0,0,0.10)');shb.addColorStop(1,'rgba(0,0,0,0)');
-  ctx.fillStyle=shb;ctx.fillRect(0,614,W,50);
-
-  // ===== banda inferior =====
-  let gb=ctx.createLinearGradient(0,H-240,W,H);
-  gb.addColorStop(0,C.navy);gb.addColorStop(1,C.blue);
-  ctx.fillStyle=gb;
+  // ===== ZONA SUPERIOR: gris claro =====
+  ctx.fillStyle=light;
   ctx.beginPath();
-  ctx.moveTo(0,H-180);ctx.lineTo(W,H-240);ctx.lineTo(W,H);ctx.lineTo(0,H);
+  ctx.moveTo(0,0);ctx.lineTo(W,0);
+  ctx.lineTo(W,topY-skew);ctx.lineTo(0,topY+skew);
   ctx.closePath();ctx.fill();
 
-  // ===== logo (a color, grande, sobre banda blanca) =====
+  // ===== ZONA CENTRAL: azul (sigue el ángulo) =====
+  let gm=ctx.createLinearGradient(0,topY,W,midY);
+  gm.addColorStop(0,C.navy);gm.addColorStop(1,C.blue);
+  ctx.fillStyle=gm;
+  ctx.beginPath();
+  ctx.moveTo(0,topY+skew);ctx.lineTo(W,topY-skew);
+  ctx.lineTo(W,midY-skew);ctx.lineTo(0,midY+skew);
+  ctx.closePath();ctx.fill();
+
+  // ===== ZONA INFERIOR: gris claro =====
+  ctx.fillStyle=light;
+  ctx.beginPath();
+  ctx.moveTo(0,midY+skew);ctx.lineTo(W,midY-skew);
+  ctx.lineTo(W,H);ctx.lineTo(0,H);
+  ctx.closePath();ctx.fill();
+
+  // ===== rayas doradas inclinadas (stroke = bordes suaves) =====
+  function diagBar(yC){
+    ctx.save();
+    ctx.strokeStyle=C.gold;
+    ctx.lineWidth=15;
+    ctx.lineCap='butt';
+    ctx.beginPath();
+    ctx.moveTo(-2,yC+skew+8);
+    ctx.lineTo(W+2,yC-skew+8);
+    ctx.stroke();
+    ctx.restore();
+  }
+  diagBar(topY);
+  diagBar(midY);
+
+  // ===== logo (a color, grande, zona superior) =====
   if(logoReady){
-    const lw=720, lh=lw*logoImg.height/logoImg.width;
-    const lx=(W-lw)/2, ly=120;
+    const lw=700, lh=lw*logoImg.height/logoImg.width;
+    const lx=(W-lw)/2, ly=90;
     ctx.drawImage(logoImg,lx,ly,lw,lh);
   }
 
-  // ===== badge =====
+  // ===== badge (debajo del logo, en la zona superior) =====
   ctx.font='800 46px Segoe UI, sans-serif';
   const bt=val('i-badge').toUpperCase();
   const bw=ctx.measureText(bt).width+140;
-  const bh=96;
-  const bx=(W-bw)/2, by=470;
+  const bh=92;
+  const bx=(W-bw)/2, by=440;
   ctx.fillStyle=C.gold;
   roundRect(bx,by,bw,bh,bh/2);ctx.fill();
   ctx.fillStyle=C.navy;
   ctx.textAlign='center';ctx.textBaseline='middle';
   ctx.fillText(bt,W/2,by+bh/2+3);
 
-  // ===== título =====
-  ctx.fillStyle=C.navy;
+  // ===== título (blanco sobre azul) =====
+  ctx.fillStyle='#fff';
   ctx.font='800 80px Segoe UI, sans-serif';
   ctx.textAlign='center';ctx.textBaseline='top';
   const tLines=wrap(val('i-title'),900);
-  let ty=730;
+  let ty=860;
   for(const l of tLines){ctx.fillText(l,W/2,ty);ty+=94;}
 
-  // ===== mensaje =====
+  // ===== mensaje (claro sobre azul) =====
   ty+=30;
-  ctx.fillStyle=C.ink;
+  ctx.fillStyle='#E8EEF6';
   ctx.font='400 46px Segoe UI, sans-serif';
   const mLines=wrap(val('i-body'),880);
   for(const l of mLines){ctx.fillText(l,W/2,ty);ty+=68;}
 
-  // ===== divisor dorado =====
+  // ===== divisor dorado (dentro del azul) =====
   ctx.fillStyle=C.gold;
   roundRect(W/2-60,1560,120,8,4);ctx.fill();
 
-  // ===== contacto =====
+  // ===== contacto (azul sobre gris inferior) =====
   ctx.textAlign='center';
-  ctx.fillStyle='#fff';
+  ctx.fillStyle=C.navy;
   ctx.font='800 48px Segoe UI, sans-serif';
   ctx.fillText('📲 '+val('i-wa'),W/2,H-150);
-  ctx.fillStyle='#CDD9EA';
+  ctx.fillStyle=C.blue;
   ctx.font='400 32px Segoe UI, sans-serif';
   const sLines=wrap(val('i-slogan'),900);
   let sy=H-92;
