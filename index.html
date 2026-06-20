@@ -80,16 +80,16 @@ function draw(){
   // fondo blanco
   ctx.fillStyle='#fff';ctx.fillRect(0,0,W,H);
 
-  // ===== banda superior con degradado =====
-  let gt=ctx.createLinearGradient(0,0,W,560);
-  gt.addColorStop(0,C.navy);gt.addColorStop(1,C.blue);
-  ctx.fillStyle=gt;
-  ctx.beginPath();
-  ctx.moveTo(0,0);ctx.lineTo(W,0);ctx.lineTo(W,540);ctx.lineTo(0,540);
-  ctx.closePath();ctx.fill();
+  // ===== banda superior BLANCA =====
+  ctx.fillStyle='#fff';
+  ctx.fillRect(0,0,W,600);
   // barra dorada (recta)
   ctx.fillStyle=C.gold;
-  ctx.fillRect(0,540,W,14);
+  ctx.fillRect(0,600,W,14);
+  // sombra suave bajo la banda
+  let shb=ctx.createLinearGradient(0,614,0,664);
+  shb.addColorStop(0,'rgba(0,0,0,0.10)');shb.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=shb;ctx.fillRect(0,614,W,50);
 
   // ===== banda inferior =====
   let gb=ctx.createLinearGradient(0,H-240,W,H);
@@ -99,13 +99,10 @@ function draw(){
   ctx.moveTo(0,H-180);ctx.lineTo(W,H-240);ctx.lineTo(W,H);ctx.lineTo(0,H);
   ctx.closePath();ctx.fill();
 
-  // ===== logo (a color sobre recuadro blanco) =====
+  // ===== logo (a color, grande, sobre banda blanca) =====
   if(logoReady){
-    const lw=520, lh=lw*logoImg.height/logoImg.width;
-    const lx=(W-lw)/2, ly=90;
-    // recuadro blanco redondeado
-    ctx.fillStyle='#fff';
-    roundRect(lx-40,ly-30,lw+80,lh+60,28);ctx.fill();
+    const lw=720, lh=lw*logoImg.height/logoImg.width;
+    const lx=(W-lw)/2, ly=120;
     ctx.drawImage(logoImg,lx,ly,lw,lh);
   }
 
@@ -114,7 +111,7 @@ function draw(){
   const bt=val('i-badge').toUpperCase();
   const bw=ctx.measureText(bt).width+140;
   const bh=96;
-  const bx=(W-bw)/2, by=405;
+  const bx=(W-bw)/2, by=470;
   ctx.fillStyle=C.gold;
   roundRect(bx,by,bw,bh,bh/2);ctx.fill();
   ctx.fillStyle=C.navy;
