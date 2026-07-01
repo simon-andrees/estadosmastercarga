@@ -177,7 +177,7 @@ function compartir(){
       return;
     }
     const file=new File([blob],'estado_master_carga.png',{type:'image/png'});
-    const data={files:[file],title:'Estado Master Carga SAS'};
+    const data={files:[file]};
     if(navigator.canShare && navigator.canShare(data)){
       navigator.share(data).catch((err)=>{
         if(err.name!=='AbortError'){
