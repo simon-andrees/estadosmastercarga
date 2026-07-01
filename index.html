@@ -16,6 +16,8 @@
   .toolbar input:focus,.toolbar textarea:focus{outline:none;border-color:var(--blue);}
   .btn{background:var(--blue);color:#fff;border:none;border-radius:8px;padding:13px;font-size:14px;font-weight:600;cursor:pointer;}
   .btn:active{background:var(--navy);}
+  .btn-whatsapp{background:#25D366;}
+  .btn-whatsapp:active{background:#128C7E;}
   .hint{color:#6b7280;font-size:11px;text-align:center;line-height:1.4;}
   canvas{width:100%;max-width:340px;height:auto;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,.5);}
 </style>
@@ -34,6 +36,7 @@
     <label>Eslogan</label>
     <input id="i-slogan" value="Transporte de carga con calidad y excelencia">
     <button class="btn" onclick="descargar()">⬇️ Descargar imagen (1080×1920)</button>
+    <button class="btn btn-whatsapp" onclick="compartir()">📲 Compartir en WhatsApp</button>
     <p class="hint">La imagen se dibuja exactamente como la ves. Funciona en computador y celular.</p>
   </div>
 
@@ -110,16 +113,16 @@ function draw(){
   ctx.fillStyle=C.gold;
   ctx.fillRect(0,540,W,14);
 
-  let gb=ctx.createLinearGradient(0,H-240,W,H);
+  let gb=ctx.createLinearGradient(0,H-320,W,H);
   gb.addColorStop(0,C.navy);gb.addColorStop(1,C.blue);
   ctx.fillStyle=gb;
   ctx.beginPath();
-  ctx.moveTo(0,H-180);ctx.lineTo(W,H-240);ctx.lineTo(W,H);ctx.lineTo(0,H);
+  ctx.moveTo(0,H-260);ctx.lineTo(W,H-320);ctx.lineTo(W,H);ctx.lineTo(0,H);
   ctx.closePath();ctx.fill();
 
   if(logoReady && whiteLogoReady){
     const lw=620, lh=lw*whiteLogo.height/whiteLogo.width;
-    const lx=(W-lw)/2, ly=90;
+    const lx=(W-lw)/2, ly=140;
     ctx.save();
     ctx.shadowColor='rgba(0,0,0,0.55)';ctx.shadowBlur=22;ctx.shadowOffsetY=4;
     ctx.drawImage(whiteLogo,lx,ly,lw,lh);
@@ -146,11 +149,11 @@ function draw(){
   ctx.textAlign='center';
   ctx.fillStyle='#fff';
   ctx.font='800 48px Segoe UI, sans-serif';
-  ctx.fillText('📲 '+val('i-wa'),W/2,H-150);
+  ctx.fillText('📲 '+val('i-wa'),W/2,H-220);
   ctx.fillStyle='#CDD9EA';
   ctx.font='400 32px Segoe UI, sans-serif';
   const sLines=wrap(val('i-slogan'),900);
-  let sy=H-92;
+  let sy=H-160;
   for(const l of sLines){ctx.fillText(l,W/2,sy);sy+=40;}
 }
 
@@ -166,6 +169,28 @@ function descargar(){
   a.click();
 }
 
+function compartir(){
+  draw();
+  cv.toBlob((blob)=>{
+    if(!blob){
+      alert('No se pudo generar la imagen. Intenta descargarla.');
+      return;
+    }
+    const file=new File([blob],'estado_master_carga.png',{type:'image/png'});
+    const data={files:[file],title:'Estado Master Carga SAS'};
+    if(navigator.canShare && navigator.canShare(data)){
+      navigator.share(data).catch((err)=>{
+        if(err.name!=='AbortError'){
+          alert('No se pudo compartir. Puedes descargar la imagen y subirla manualmente.');
+        }
+      });
+    }else{
+      alert('Tu navegador no permite compartir archivos directamente. Usa el botón de descargar.');
+    }
+  },'image/png');
+}
+
+// primer render aunque el logo aún no cargue
 draw();
 </script>
 </body>
